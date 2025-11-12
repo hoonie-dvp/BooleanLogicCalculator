@@ -13,7 +13,7 @@ bool Lexer::isOperator(const string& word) {
 }
 //Error handling: vecter<Token> is the type of return value
 vector<Token> Lexer::tokenize() {
-	int getLogicLength = lexExpression.length();
+	size_t getLogicLength = lexExpression.length();
 
 	//Temporary variable to store the empty space
 	string temp;
@@ -27,29 +27,29 @@ vector<Token> Lexer::tokenize() {
 			
 		if (c == '(') {
 			tokens.push_back(Token(TokenType::PARREN_LEFT, "(" ));
-			i++;
 			continue;
 		}
 		if (c == ')') {
 			tokens.push_back(Token(TokenType::PARREN_RIGHT, ")"));
-			i++;
 			continue;
 		}
 
 		if (isalpha(c)) {
 			string getWord;
+
 			while(i<getLogicLength && isalpha(lexExpression[i])) {
 				//Error handling: static_cast to avoid sign extension issues
 				getWord += tolower(static_cast<unsigned char>(lexExpression[i]));
 				i++;
 			}
-			
+			i--;
 			if (isOperator(getWord)) {
 				tokens.push_back(Token(TokenType::OPERATOR, getWord));
 			}
 			else {
 				tokens.push_back(Token(TokenType::INPUT, getWord));
 			}
+			continue;
 		}
 	}
 	return tokens;

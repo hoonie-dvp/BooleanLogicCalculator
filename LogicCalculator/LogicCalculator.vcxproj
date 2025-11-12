@@ -123,11 +123,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Evaluator.cpp" />
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Parser.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Evaluator.h" />
     <ClInclude Include="Lexer.h" />
+    <ClInclude Include="Parser.h" />
     <ClInclude Include="Token.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

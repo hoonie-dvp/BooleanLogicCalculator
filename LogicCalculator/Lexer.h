@@ -8,7 +8,7 @@ using namespace std;
 
 class Lexer {
 public:
-	Lexer(string& logicExpression) : lexExpression(logicExpression) {}
+	Lexer(string& logicExpression);
 	~Lexer();
 	//Tokenize the input logical expression into tokens with valid types in Enum
 	vector<Token> tokenize();

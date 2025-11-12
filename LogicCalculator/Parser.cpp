@@ -1,81 +1,76 @@
 #include "Parser.h"
-#include <iostream>
+#include <stack>
 
 using namespace std;
 
-//Use Shunting Yard Algorithm to convert infix to postfix
-
-Parser::Parser(const vector<Token>& tokens) : tokens(tokens) {}
-
-Parser::~Parser() {}
+Parser::Parser(const vector<Token>& tokens) : infixTokens(tokens) {}
 
 bool Parser::isOperator(const Token& token) {
-	if(token.type != TokenType::OPERATOR){
-		return false;
-	}
-	string op = token.value;
-	return (op == "and" || op == "or" || op == "not" || op == "xor");
+    if (token.type != TokenType::OPERATOR) return false;
+    string op = token.value;
+    return (op == "and" || op == "or" || op == "not" || op == "xor");
+}
+
+bool Parser::isUnaryOperator(const Token& token) {
+    return token.type == TokenType::OPERATOR && token.value == "not";
 }
 
 int Parser::getPrecedence(const string& op) {
-	if (op == "not") return 3;
-	if (op == "and") return 2;
-	if (op == "or" || op == "xor") return 1;
-	return 0;
+    if (op == "not") return 3;
+    if (op == "and") return 2;
+    if (op == "or") return 1;
+    if (op == "xor") return 1;
+    return 0;
 }
 
-bool Parser :: isRightAssociative(const string& op) {
-	return op == "not";
+bool Parser::isRightAssociative(const string& op) {
+    return op == "not";
 }
 
-vector<Token> Parser::getPostfix() {
-	for (const Token& token : tokens) {
-		if (token.type == TokenType::INPUT) {
-			output.push_back(token);
-		}
+vector<Token> Parser::toPostfix() {
+    vector<Token> output;
+    stack<Token> opStack;
 
-		else if (isOperator(token)) {
-			while (!opStack.empty()) {
-				Token topOp = opStack.top();
-				if (!isOperator(topOp)) {
-					break;
-				}
-				int topPrec = getPrecedence(topOp.value);
-				int currPrec = getPrecedence(token.value);
+    for (const auto& token : infixTokens) {
+        if (token.type == TokenType::INPUT) {
+            output.push_back(token);
+        }
+        else if (isOperator(token)) {
+            if (isUnaryOperator(token)) {
+                while (!opStack.empty() && isOperator(opStack.top()) &&
+                    getPrecedence(opStack.top().value) > getPrecedence(token.value)) {
+                    output.push_back(opStack.top());
+                    opStack.pop();
+                }
+                opStack.push(token);
+            }
+            else { // ÀÌÇ×
+                while (!opStack.empty() && isOperator(opStack.top()) &&
+                    ((isRightAssociative(token.value) && getPrecedence(token.value) < getPrecedence(opStack.top().value)) ||
+                        (!isRightAssociative(token.value) && getPrecedence(token.value) <= getPrecedence(opStack.top().value)))) {
+                    output.push_back(opStack.top());
+                    opStack.pop();
+                }
+                opStack.push(token);
+            }
+        }
+        else if (token.type == TokenType::PARREN_LEFT) {
+            opStack.push(token);
+        }
+        else if (token.type == TokenType::PARREN_RIGHT) {
+            while (!opStack.empty() && opStack.top().type != TokenType::PARREN_LEFT) {
+                output.push_back(opStack.top());
+                opStack.pop();
+            }
+            if (!opStack.empty() && opStack.top().type == TokenType::PARREN_LEFT)
+                opStack.pop();
+        }
+    }
 
-				bool rightAssoc = isRightAssociative(token.value);
+    while (!opStack.empty()) {
+        output.push_back(opStack.top());
+        opStack.pop();
+    }
 
-				if ((!rightAssoc && currPrec <= topPrec) || (rightAssoc && currPrec < topPrec)) {
-					output.push_back(topOp);
-					opStack.pop();
-				}else {
-					break;
-				}
-
-			}
-			opStack.push(token);
-		}
-
-		else if (token.type == TokenType::PARREN_LEFT) {
-			opStack.push(token);
-		}
-
-		else if (token.type == TokenType::PARREN_RIGHT) {
-			while (!opStack.empty() && opStack.top().type != TokenType::PARREN_LEFT) {
-				output.push_back(opStack.top());
-				opStack.pop();
-			}
-
-			if (!opStack.empty() && opStack.top().type == TokenType::PARREN_LEFT) {
-				opStack.pop();
-			}
-		}
-	}
-	while (!opStack.empty()) {
-		output.push_back(opStack.top());
-		opStack.pop();
-	}
-
-	return output;
-
+    return output;
 }
