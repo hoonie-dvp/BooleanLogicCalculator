@@ -8,7 +8,6 @@ using namespace std;
 Lexer::Lexer(string& logicExpression) : lexExpression(logicExpression) {}
 
 Lexer::~Lexer() {}
-
 bool Lexer::isOperator(const string& word) {
 	return word == "and" || word == "or" || word == "not" || word == "xor";
 }

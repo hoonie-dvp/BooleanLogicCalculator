@@ -1,3 +1,7 @@
+/*
+Define a token structure to represent different types of tokens in a logic calculator.
+*/
+
 #pragma once
 #include <string>
 
