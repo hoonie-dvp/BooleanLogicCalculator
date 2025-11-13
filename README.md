@@ -21,7 +21,7 @@
 - <b>Truth Table Output Formatting</b>
 
 
-![Boolean Logic Operator](./images/booleanLogicoperator.png)
+<img src="./images/booleanLogicoperator_1_.png" width="500">
 
 
 
