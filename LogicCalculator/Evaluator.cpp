@@ -63,7 +63,6 @@ void Evaluator::evaluateTruthTable() {
 
         bool finalResult = st.top();
 
-        // Ãâ·Â
         cout << setw(3) << a << setw(3) << b << setw(3) << c << " | ";
         for (auto val : intermediates) cout << setw(7) << val;
         cout << " | " << finalResult << "\n";
